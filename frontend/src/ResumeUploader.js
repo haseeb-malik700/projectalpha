@@ -2,37 +2,30 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const ResumeUploader = () => {
-  const [file, setFile] = useState(null);
-  const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  // Handle file selection
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
+  const [text, setText] = useState(""); // Store resume text
+  const [response, setResponse] = useState(""); // Store backend response
+  const [loading, setLoading] = useState(false); // Loading state
+  const apiUrl = process.env.REACT_APP_API_URL;
+  
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) {
-      alert("Please upload a resume file.");
+    if (!text.trim()) {
+      alert("Please enter some resume text.");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     setLoading(true);
     try {
-      // Replace with your backend URL
-      const res = await axios.post("http://127.0.0.1:8000/review-resume", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setResponse(res.data); // Adjust based on backend response format
+      const res = await axios.post(`${apiUrl}/gemini`, { text });
+      // Ensure the response accesses the `text` key in the returned object
+      if (res.data && res.data.text) {
+        setResponse(res.data.text);
+      } else {
+        setResponse("Unexpected response from the server.");
+      }
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error("Error sending text to backend:", error);
       setResponse("An error occurred. Please try again.");
     } finally {
       setLoading(false);
@@ -43,20 +36,22 @@ const ResumeUploader = () => {
     <div style={styles.container}>
       <h1 style={styles.prompt}>How can I help you with your resume today?</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
-        <input
-          type="file"
-          accept=".pdf,.doc,.docx,.txt"
-          onChange={handleFileChange}
-          style={styles.fileInput}
+        <textarea
+          placeholder="Paste your resume text here..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          rows="10"
+          cols="50"
+          style={styles.textarea}
         />
         <button type="submit" style={styles.button} disabled={loading}>
-          {loading ? "Uploading..." : "Submit"}
+          {loading ? "Processing..." : "Submit"}
         </button>
       </form>
       {response && (
         <div style={styles.response}>
-          <h3>Response:</h3>
-          <p>{response}</p>
+          <h3>Formatted CV:</h3>
+          <pre style={styles.pre}>{response}</pre>
         </div>
       )}
     </div>
@@ -84,8 +79,11 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
   },
-  fileInput: {
+  textarea: {
+    width: "100%",
     marginBottom: "15px",
+    padding: "10px",
+    fontSize: "16px",
   },
   button: {
     padding: "10px 20px",
@@ -99,6 +97,14 @@ const styles = {
   response: {
     marginTop: "20px",
     textAlign: "left",
+  },
+  pre: {
+    background: "#f8f9fa",
+    padding: "15px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    whiteSpace: "pre-wrap", // Ensures line breaks wrap properly
+    fontFamily: "Courier New, monospace",
   },
 };
 
