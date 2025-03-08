@@ -8,27 +8,23 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     name: Docker Image Build
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-       
-       - name: frontend docker image build 
-         run: |
-           cd frontend
-           docker build -t frontend:latest .
+      
+      - name: Frontend Docker Image Build 
+        run: |
+          cd frontend
+          docker build -t frontend:latest .
 
-jobs:
   docker_hub_login:
+    name: Docker Hub Login
     runs-on: ubuntu-latest
-    name: Docker Hub login
-
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: login to docker hub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
-      
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
