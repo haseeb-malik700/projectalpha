@@ -12,13 +12,13 @@ jobs:
     name: Docker Image Build
 
     steps:
-      -name: Checkout
-       uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
        
-       -name: frontend docker image build 
-        run: |
-          cd frontend
-          docker build -t frontend:latest .
+       - name: frontend docker image build 
+         run: |
+           cd frontend
+           docker build -t frontend:latest .
 
 jobs:
   docker_hub_login:
@@ -26,9 +26,9 @@ jobs:
     name: Docker Hub login
 
     steps:
-      -name: checkout
-       uses: actions/checkout@v4
+      - name: checkout
+        uses: actions/checkout@v4
 
-      -name: login to docker hub
-       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
+      - name: login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
       
