@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Docker Image Build
+  build_and_push:
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,16 +18,10 @@ jobs:
         run: |
           cd frontend
           docker build -t ${{ secrets.DOCKER_USERNAME }}/projectalpha:frontendlatest .
-
-  docker_hub_login:
-    name: Docker Hub Login
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      
       - name: Push Docker Image
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/projectalpha:frontendlatest
