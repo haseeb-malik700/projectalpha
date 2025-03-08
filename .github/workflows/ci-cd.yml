@@ -17,7 +17,7 @@ jobs:
       - name: Frontend Docker Image Build 
         run: |
           cd frontend
-          docker build -t frontend:latest .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/projectalpha:frontendlatest .
 
   docker_hub_login:
     name: Docker Hub Login
@@ -28,3 +28,6 @@ jobs:
 
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Push Docker Image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/projectalpha:frontendlatest
